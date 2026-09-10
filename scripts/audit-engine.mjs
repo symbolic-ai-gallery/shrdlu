@@ -46,7 +46,7 @@ for (const [index, t] of classic.entries()) {
 }
 fs.writeFileSync(
   process.argv.includes("--upstream")
-    ? "docs/upstream-audit.json"
-    : "docs/compatibility-audit.json",
+    ? "documents/upstream-audit.json"
+    : "documents/compatibility-audit.json",
   JSON.stringify(results, null, 2),
 );

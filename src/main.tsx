@@ -2,6 +2,7 @@ import React, { useEffect, useState, lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 const App = lazy(() => import("./App"));
 import Landing from "./Landing";
+import { ThemeProvider } from "./components/Theme";
 import "./styles.css";
 import "./landing.css";
 function Router() {
@@ -38,6 +39,8 @@ function Router() {
 }
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Router />
+    <ThemeProvider>
+      <Router />
+    </ThemeProvider>
   </React.StrictMode>,
 );

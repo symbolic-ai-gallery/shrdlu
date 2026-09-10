@@ -16,7 +16,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "pnpm engine:build && vitest run",
     "audit": "pnpm engine:build && node scripts/audit-engine.mjs",
-    "format": "prettier --write src scripts tests docs README.md THIRD_PARTY_NOTICES.md package.json vite.config.ts vitest.config.ts tsconfig.json"
+    "format": "prettier --write src scripts tests documents README.md THIRD_PARTY_NOTICES.md package.json vite.config.ts vitest.config.ts tsconfig.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
@@ -24,6 +24,7 @@
     "@xmldom/xmldom": "^0.8.11",
     "lucide-react": "^0.468.0",
     "react": "^19.2.0",
+    "react-bottom-fixed": "^0.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.0",
     "three": "^0.180.0"

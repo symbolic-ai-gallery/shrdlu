@@ -5,6 +5,7 @@ import {
   Box,
   BookOpen,
 } from "lucide-react";
+import { ThemeToggle } from "./components/Theme";
 const steps = [
   ["01", "分析语言", "从词汇和语法结构中识别命令、问题、描述与关系。"],
   [
@@ -38,9 +39,12 @@ export default function Landing() {
           <a href="#system">系统原理</a>
           <a href="#scope">复刻范围</a>
         </nav>
-        <a className="landing-button dark compact" href="#/lab">
-          打开实验 <ArrowUpRight size={16} />
-        </a>
+        <div className="site-header-actions">
+          <ThemeToggle />
+          <a className="landing-button dark compact" href="#/lab">
+            打开实验 <ArrowUpRight size={16} />
+          </a>
+        </div>
       </header>
       <main className="landing-main">
         <section className="landing-hero">

@@ -20,6 +20,7 @@ export type CameraAction = {
   kind: "reset" | "in" | "out" | "left" | "right";
 };
 type Props = {
+  dark: boolean;
   world: World | null;
   selected: string | null;
   onSelect: (id: string) => void;
@@ -53,7 +54,8 @@ export default function WorldView(props: Props) {
     renderer.setClearColor(0xf7f7f7, 0);
     mount.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x949ca0, 2.1));
+    const ambient = new THREE.HemisphereLight(0xffffff, 0x949ca0, 2.1);
+    scene.add(ambient);
     const light = new THREE.DirectionalLight(0xfff9ef, 2.5);
     light.position.set(-35, 80, 45);
     light.castShadow = true;
@@ -91,19 +93,23 @@ export default function WorldView(props: Props) {
       targets: THREE.Object3D[] = [];
     const material = (color: string, metalness = 0.05) =>
       new THREE.MeshStandardMaterial({ color, roughness: 0.48, metalness });
+    function paintLabel(c: HTMLCanvasElement, text: string, dark: boolean) {
+      const ctx = c.getContext("2d")!;
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.fillStyle = dark ? "#202427ee" : "#ffffffee";
+      ctx.beginPath();
+      ctx.roundRect(2, 2, 252, 60, 9);
+      ctx.fill();
+      ctx.fillStyle = dark ? "#e5e9ec" : "#30373b";
+      ctx.font = "25px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(text, 128, 42);
+    }
     function label(text: string) {
       const c = document.createElement("canvas");
       c.width = 256;
       c.height = 64;
-      const ctx = c.getContext("2d")!;
-      ctx.fillStyle = "#ffffffee";
-      ctx.beginPath();
-      ctx.roundRect(2, 2, 252, 60, 9);
-      ctx.fill();
-      ctx.fillStyle = "#30373b";
-      ctx.font = "25px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(text, 128, 42);
+      paintLabel(c, text, latest.current.dark);
       const sprite = new THREE.Sprite(
         new THREE.SpriteMaterial({
           map: new THREE.CanvasTexture(c),
@@ -323,6 +329,7 @@ export default function WorldView(props: Props) {
       cameraId = -1,
       displayed: World | null = null,
       grip = 0;
+    let appliedDark: boolean | undefined;
     let segment: {
       from: World;
       to: World;
@@ -335,6 +342,15 @@ export default function WorldView(props: Props) {
       const delta = Math.min(80, now - previousTime);
       previousTime = now;
       const p = latest.current;
+      const themeChanged = appliedDark !== p.dark;
+      if (themeChanged) {
+        appliedDark = p.dark;
+        ambient.intensity = p.dark ? 1.5 : 2.1;
+        ambient.groundColor.set(p.dark ? 0x465366 : 0x949ca0);
+        light.intensity = p.dark ? 2 : 2.5;
+        floor.material.opacity = p.dark ? 0.3 : 0.12;
+        grid.material.color.set(p.dark ? 0x849299 : 0xffffff);
+      }
       if (p.cameraAction.id !== cameraId) {
         cameraId = p.cameraAction.id;
         const kind = p.cameraAction.kind;
@@ -410,8 +426,22 @@ export default function WorldView(props: Props) {
               m.wireframe = p.wireframe && b.type !== "table";
               m.emissive.set(b.ID === p.selected ? 0x263137 : 0);
               m.emissiveIntensity = 0.16;
+              if (b.type === "table")
+                m.color.set(p.dark ? 0x41494f : (colors[b.color] ?? "#dde1e2"));
             }
-            if (o.name === "label") o.visible = p.labels || b.ID === p.selected;
+            if (o instanceof THREE.LineSegments) {
+              (o.material as THREE.LineBasicMaterial).color.set(
+                p.dark ? 0xaab9c1 : 0x47535a,
+              );
+            }
+            if (o.name === "label") {
+              o.visible = p.labels || b.ID === p.selected;
+              if (themeChanged && o instanceof THREE.Sprite) {
+                const texture = o.material.map!;
+                paintLabel(texture.image as HTMLCanvasElement, b.ID, p.dark);
+                texture.needsUpdate = true;
+              }
+            }
           });
         }
         pose(displayed, grip, p.paused ? 0 : delta);

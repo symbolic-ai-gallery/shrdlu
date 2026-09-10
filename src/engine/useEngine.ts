@@ -78,7 +78,7 @@ export function useEngine() {
     };
     w.postMessage({
       type: "init",
-      base: new URL(import.meta.env.BASE_URL, location.origin).href,
+      base: new URL(import.meta.env.BASE_URL, document.baseURI).href,
     });
   }, [add]);
   useEffect(() => {

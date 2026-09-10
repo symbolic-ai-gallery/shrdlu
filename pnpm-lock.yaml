@@ -23,6 +23,9 @@ importers:
       react:
         specifier: ^19.2.0
         version: 19.3.0
+      react-bottom-fixed:
+        specifier: ^0.2.0
+        version: 0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-dom:
         specifier: ^19.2.0
         version: 19.3.0(react@19.3.0)
@@ -1107,6 +1110,12 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  react-bottom-fixed@0.2.0:
+    resolution: {integrity: sha512-bFNlu5WapLA/74wwfqSSUgIcLqOUlc5dDhJ6lToipUCraXIL8l+te6/R26oXJL33E3OJws+q3b7c3vbAVNj2rg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   react-dom@19.3.0:
     resolution: {integrity: sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==}
     peerDependencies:
@@ -2102,6 +2111,11 @@ snapshots:
       source-map-js: 1.2.1
 
   prettier@3.9.6: {}
+
+  react-bottom-fixed@0.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
 
   react-dom@19.3.0(react@19.3.0):
     dependencies:

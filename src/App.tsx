@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@base-ui/react/button";
 import { Dialog } from "@base-ui/react/dialog";
 import { Menu } from "@base-ui/react/menu";
+import { ThemeToggle, useTheme } from "./components/Theme";
+import ComposerDock from "./components/ComposerDock";
 import {
   ArrowLeft,
   ArrowUp,
@@ -49,6 +51,7 @@ const phases: Record<MotionPhase, [string, string]> = {
   retreat: ["收回", "Retracting"],
 };
 export default function App() {
+  const { dark } = useTheme();
   const { world, messages, status, submit, reset, acknowledge, generation } =
     useEngine();
   useWorldTools(world, status, submit);
@@ -99,6 +102,8 @@ export default function App() {
       shell.current.dataset.keyboard = String(
         (viewport?.height ?? innerHeight) < window.innerHeight * 0.78,
       );
+      document.documentElement.dataset.keyboard =
+        shell.current.dataset.keyboard;
     };
     fit();
     viewport?.addEventListener("resize", fit);
@@ -108,6 +113,7 @@ export default function App() {
       viewport?.removeEventListener("resize", fit);
       viewport?.removeEventListener("scroll", fit);
       window.removeEventListener("resize", fit);
+      delete document.documentElement.dataset.keyboard;
     };
   }, []);
   useEffect(() => {
@@ -226,6 +232,7 @@ export default function App() {
           <span>SHRDLU</span>
         </a>
         <div className="lab-header-actions">
+          <ThemeToggle zh={zh} />
           <Button
             className="ui-button ghost"
             onClick={() => setDialog("examples")}
@@ -328,6 +335,7 @@ export default function App() {
           aria-label={t("积木世界", "Blocks world")}
         >
           <WorldView
+            dark={dark}
             key={generation}
             world={world}
             selected={selected}
@@ -524,69 +532,71 @@ export default function App() {
               {t("新消息", "New messages")}
             </Button>
           )}
-          <form
-            className="chat-composer"
-            onSubmit={(e) => {
-              e.preventDefault();
-              send();
-            }}
-          >
-            <label htmlFor="instruction" className="sr-only">
-              {t("指令或问题", "Instruction or question")}
-            </label>
-            <div className="composer-field">
-              <textarea
-                id="instruction"
-                name="instruction"
-                ref={inputRef}
-                rows={2}
-                maxLength={600}
-                autoComplete="off"
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setError("");
-                }}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    (e.metaKey || e.ctrlKey) &&
-                    !e.nativeEvent.isComposing
-                  ) {
-                    e.preventDefault();
-                    send();
-                  }
-                }}
-                placeholder={t(
-                  "输入指令或问题…",
-                  "Enter an instruction or question…",
-                )}
-                aria-invalid={!!error}
-                aria-describedby={error ? "input-error" : undefined}
-              />
-              <Button
-                type="submit"
-                className="ui-button icon primary"
-                disabled={!ready || demoStep >= 0}
-                aria-label={t(
-                  "发送（Ctrl / ⌘ + Enter）",
-                  "Send (Ctrl / ⌘ + Enter)",
-                )}
-              >
-                <ArrowUp />
-              </Button>
-            </div>
-            {error && (
-              <p id="input-error" className="input-error" role="alert">
-                {error}
-              </p>
-            )}
-            {status === "error" && (
-              <Button className="ui-button ghost" onClick={resetAll}>
-                {t("重置并重试", "Reset and retry")}
-              </Button>
-            )}
-          </form>
+          <ComposerDock>
+            <form
+              className="chat-composer"
+              onSubmit={(e) => {
+                e.preventDefault();
+                send();
+              }}
+            >
+              <label htmlFor="instruction" className="sr-only">
+                {t("指令或问题", "Instruction or question")}
+              </label>
+              <div className="composer-field">
+                <textarea
+                  id="instruction"
+                  name="instruction"
+                  ref={inputRef}
+                  rows={2}
+                  maxLength={600}
+                  autoComplete="off"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      (e.metaKey || e.ctrlKey) &&
+                      !e.nativeEvent.isComposing
+                    ) {
+                      e.preventDefault();
+                      send();
+                    }
+                  }}
+                  placeholder={t(
+                    "输入指令或问题…",
+                    "Enter an instruction or question…",
+                  )}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "input-error" : undefined}
+                />
+                <Button
+                  type="submit"
+                  className="ui-button icon primary"
+                  disabled={!ready || demoStep >= 0}
+                  aria-label={t(
+                    "发送（Ctrl / ⌘ + Enter）",
+                    "Send (Ctrl / ⌘ + Enter)",
+                  )}
+                >
+                  <ArrowUp />
+                </Button>
+              </div>
+              {error && (
+                <p id="input-error" className="input-error" role="alert">
+                  {error}
+                </p>
+              )}
+              {status === "error" && (
+                <Button className="ui-button ghost" onClick={resetAll}>
+                  {t("重置并重试", "Reset and retry")}
+                </Button>
+              )}
+            </form>
+          </ComposerDock>
         </section>
       </main>
       <Dialog.Root
