@@ -1,4 +1,5 @@
 import type { Block, Engine, World, MotionPhase } from "./types";
+import { normalizeEnglish, stripEnglishPoliteness } from "./language";
 // A bounded compositional interpreter over the shared world. It never reads the
 // historical transcript. Plans, references, answers and explanations use live facts.
 type Event = {
@@ -10,14 +11,10 @@ type Event = {
   root: string;
 };
 const copy = <T>(x: T): T => structuredClone(x);
-const clean = (x: string) =>
-  x
-    .toLowerCase()
-    .replace(/[“”"?.!]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+const clean = normalizeEnglish;
 const plural = (x: string) =>
   x
+    .replace(/boxes\b/g, "box")
     .replace(/ies\b/g, "y")
     .replace(/(block|cube|pyramid|object|thing|steeple)s\b/g, "$1");
 const volume = (b: Block) =>
@@ -108,13 +105,14 @@ export function createGroundedEngine(legacy: Engine): Engine {
         /^(?:the |a |an |any |some |one of |at least one of |both of |all of |all )/,
         "",
       )
+      .replace(/^(?:this|that|these|those) (?=.+)/, "")
       .replace(/^(?:the |a )/, "")
       .trim();
     if (names.has(p)) return [get(names.get(p)!)];
     if (state.objects.some((b) => b.ID === p)) return [get(p)];
     if (/^(it|that|that one|one|this|that cube)$/.test(p))
       return focus ? [get(focus)] : [];
-    if (p === "them") return lastSet.map(get);
+    if (/^(them|these|those|both)$/.test(p)) return lastSet.map(get);
     if (/^(one |block |thing )?(which |that )?(i told you|i asked you)/.test(p))
       return requestedPick ? [get(requestedPick)] : [];
     if (
@@ -152,7 +150,7 @@ export function createGroundedEngine(legacy: Engine): Engine {
       );
     }
     m = p.match(
-      /^(.+?) (?:which |that )?(?:is |are )?(not )?(in|inside|on|on top of|behind|to the left of|to the right of) (.+)$/,
+      /^(.+?) (?:which |that )?(?:is |are )?(not )?(directly on top of|on top of|directly on|inside of|in front of|to the left of|to the right of|inside|in|above|over|on|directly under|underneath|beneath|below|under|behind|outside of|outside|left of|right of) (.+)$/,
     );
     if (m) {
       const targets = recurse(m[4]);
@@ -219,16 +217,36 @@ export function createGroundedEngine(legacy: Engine): Engine {
     switch (word) {
       case "in":
       case "inside":
+      case "inside of":
         return inside(a, b);
       case "on":
       case "on top of":
+      case "above":
+      case "over":
         return above(a, b);
+      case "directly on":
+      case "directly on top of":
+        return supports(b, a);
+      case "under":
+      case "underneath":
+      case "beneath":
+      case "below":
+        return above(b, a);
+      case "directly under":
+        return supports(a, b);
       case "behind":
         return a.z > b.z + b.dz / 2;
+      case "in front of":
+        return a.z + a.dz / 2 < b.z;
       case "to the left of":
+      case "left of":
         return a.x + a.dx <= b.x + 0.01;
       case "to the right of":
+      case "right of":
         return a.x >= b.x + b.dx - 0.01;
+      case "outside":
+      case "outside of":
+        return !inside(a, b);
       default:
         return false;
     }
@@ -454,10 +472,7 @@ export function createGroundedEngine(legacy: Engine): Engine {
     messages.push(text);
   };
   const handle = (input: string): boolean => {
-    const p = clean(input).replace(
-      /^(?:will you please |would you please |could you please |please )/,
-      "",
-    );
+    const p = stripEnglishPoliteness(input);
     let m: RegExpMatchArray | null;
     if (pending === "above" && /^[12]$/.test(p)) {
       const cubes = resolve("green cubes");
@@ -491,7 +506,9 @@ export function createGroundedEngine(legacy: Engine): Engine {
       );
       return true;
     }
-    m = p.match(/^find (.+?) and put it (?:in|into|on|onto) (.+)$/);
+    m = p.match(
+      /^(?:find|pick up|take|get|grab) (.+?) and (?:then )?(?:put|place|move|set) (?:it|that|the object) (?:inside|in|into|on top of|onto|on) (.+)$/,
+    );
     if (m) {
       const b = unique(m[1], true),
         dest = unique(m[2]);
@@ -500,7 +517,27 @@ export function createGroundedEngine(legacy: Engine): Engine {
       answer(`By “it”, I mean ${describe(b)}. OK.`);
       return true;
     }
-    m = p.match(/^(?:pick up|grasp|take|grab|lift) (.+)$/);
+    m = p.match(/^(?:take|remove|lift|pick) (.+?) (?:out of|from) (.+)$/);
+    if (m) {
+      const b = unique(m[1]),
+        source = unique(m[2]);
+      if (source.type === "box" && !inside(b, source))
+        throw new Error(`${describe(b)} is not in ${describe(source)}.`);
+      pick(b, ["Because you asked me to."]);
+      focus = b.ID;
+      answer("OK.");
+      return true;
+    }
+    m = p.match(/^(?:put|set) (.+) down$/);
+    if (!m) m = p.match(/^(?:put down|drop|release) (.+)$/);
+    if (m) {
+      const b = unique(m[1]);
+      put(b, get("table"), ["Because you asked me to."]);
+      focus = b.ID;
+      answer("OK.");
+      return true;
+    }
+    m = p.match(/^(?:pick up|pick|grasp|take|grab|lift|hold|get) (.+)$/);
     if (m) {
       const b = unique(m[1], /^a |^an /.test(m[1]));
       requestedPick = b.ID;
@@ -511,7 +548,7 @@ export function createGroundedEngine(legacy: Engine): Engine {
       return true;
     }
     m = p.match(
-      /^(?:put|place|move) (.+?) (?:on top of|onto|on|into|in) (.+)$/,
+      /^(?:put|place|move|set|position) (.+?) (?:on top of|onto|on|inside of|inside|into|in) (.+)$/,
     );
     if (m) {
       const b = unique(m[1], /^a |^an /.test(m[1]));
@@ -521,13 +558,22 @@ export function createGroundedEngine(legacy: Engine): Engine {
       answer("OK.");
       return true;
     }
-    m = p.match(/^(?:stack up|stack) (.+)$/);
+    m = p.match(/^move (.+?) (?:from .+? )?to (.+)$/);
+    if (m) {
+      const b = unique(m[1]),
+        dest = unique(m[2]);
+      put(b, dest, ["Because you asked me to."]);
+      focus = b.ID;
+      answer("OK.");
+      return true;
+    }
+    m = p.match(/^(?:stack up|stack|pile up|pile) (.+)$/);
     if (m) {
       stack(expandList(m[1]), `stack ${m[1]}`);
       answer("OK.");
       return true;
     }
-    m = p.match(/^call (.+?) (\w+)$/);
+    m = p.match(/^call (.+?) ([\p{L}\p{N}_-]+)$/u);
     if (m) {
       const b = unique(m[1]);
       names.set(m[2], b.ID);
@@ -546,17 +592,15 @@ export function createGroundedEngine(legacy: Engine): Engine {
     m = p.match(/^are there any (\w+) now$/);
     if (m) {
       const name = m[1].replace(/s$/, "");
-      if (!definitions.has(name)) {
-        answer(`I don't know the word “${name}”.`);
+      if (definitions.has(name)) {
+        lastDefinition = name;
+        const items = expandList(definitions.get(name)!.join(" and "));
+        const yes = items.every((a) =>
+          items.every((b) => a.ID === b.ID || above(a, b) || above(b, a)),
+        );
+        answer(yes ? "Yes." : "No.");
         return true;
       }
-      lastDefinition = name;
-      const items = expandList(definitions.get(name)!.join(" and "));
-      const yes = items.every((a) =>
-        items.every((b) => a.ID === b.ID || above(a, b) || above(b, a)),
-      );
-      answer(yes ? "Yes." : "No.");
-      return true;
     }
     m = p.match(/^(?:build|make) (?:one|a (\w+))$/);
     if (m && definitions.has(m[1] ?? lastDefinition)) {
@@ -575,15 +619,18 @@ export function createGroundedEngine(legacy: Engine): Engine {
         return true;
       }
     }
-    m = p.match(/^what (?:does (.+) contain|is in (.+)|is inside (.+))$/);
+    m = p.match(
+      /^what (?:does (.+?) (?:contain|hold|have inside)|is (?:in|inside|inside of) (.+))$/,
+    );
     if (m) {
-      const dest = unique(m[1] ?? m[2] ?? m[3]),
+      const dest = unique(m[1] ?? m[2]),
         items = objects().filter((b) => inside(b, dest));
       answer(`${list(items)}.`);
       remember(items);
       return true;
     }
-    m = p.match(/^what is (.+) supported by$/);
+    m = p.match(/^what (?:supports|is beneath|is under) (.+)$/);
+    if (!m) m = p.match(/^what is (.+) (?:supported|held) by$/);
     if (m) {
       const b = unique(m[1]),
         s = support(b);
@@ -591,7 +638,15 @@ export function createGroundedEngine(legacy: Engine): Engine {
       focus = b.ID;
       return true;
     }
-    m = p.match(/^is (.+) supported$/);
+    m = p.match(/^what does (.+) support$/);
+    if (m) {
+      const b = unique(m[1]),
+        items = children(b);
+      answer(`${list(items)}.`);
+      remember(items, b);
+      return true;
+    }
+    m = p.match(/^is (.+) (?:supported|held up)$/);
     if (m) {
       const b = unique(m[1]),
         s = support(b);
@@ -600,6 +655,8 @@ export function createGroundedEngine(legacy: Engine): Engine {
       return true;
     }
     m = p.match(/^what colou?r is (.+)$/);
+    if (!m) m = p.match(/^what is the colou?r of (.+)$/);
+    if (!m) m = p.match(/^which colou?r is (.+)$/);
     if (m) {
       const b = unique(m[1]);
       answer(`${b.color}.`);
@@ -607,6 +664,7 @@ export function createGroundedEngine(legacy: Engine): Engine {
       return true;
     }
     m = p.match(/^where is (.+)$/);
+    if (!m) m = p.match(/^where can i find (.+)$/);
     if (m) {
       const b = unique(m[1]),
         s = support(b);
@@ -620,7 +678,11 @@ export function createGroundedEngine(legacy: Engine): Engine {
       focus = b.ID;
       return true;
     }
-    m = p.match(/^how many (.+?)(?: are there| are| is there)?$/);
+    m = p.match(
+      /^how many (.+?)(?: are there| are| is there| do you see| can you see| exist)?$/,
+    );
+    if (!m) m = p.match(/^(?:count|give me the number of) (?:the )?(.+)$/);
+    if (!m) m = p.match(/^what is the number of (.+)$/);
     if (m && !/did |while /.test(p)) {
       let phrase = m[1].replace(/ are /g, " ");
       if (/on top of green cubes/.test(phrase)) {
@@ -635,10 +697,99 @@ export function createGroundedEngine(legacy: Engine): Engine {
       remember(items);
       return true;
     }
+    m = p.match(
+      /^what (?:is|are) (directly on top of|on top of|directly on|inside of|in front of|to the left of|to the right of|inside|in|above|over|on|directly under|underneath|beneath|below|under|behind) (.+)$/,
+    );
+    if (m) {
+      const targets = resolve(m[2]),
+        items = objects().filter((b) =>
+          targets.some((target) => relation(b, target, m![1])),
+        );
+      answer(`${list(items)}.`);
+      remember(items);
+      return true;
+    }
+    m = p.match(
+      /^(?:which|what) (.+?) (?:is|are) (directly on top of|on top of|directly on|inside of|in front of|to the left of|to the right of|inside|in|above|over|on|directly under|underneath|beneath|below|under|behind|outside of|outside|left of|right of) (.+)$/,
+    );
+    if (m) {
+      const targets = resolve(m[3]),
+        items = resolve(m[1]).filter((b) =>
+          targets.some((target) => relation(b, target, m![2])),
+        );
+      answer(`${list(items)}.`);
+      remember(items);
+      return true;
+    }
+    m = p.match(
+      /^(?:which|what) (.+?) (?:is|are) (taller|shorter|narrower|wider|bigger|smaller) than (.+)$/,
+    );
+    if (m) {
+      const targets = resolve(m[3]),
+        items = resolve(m[1]).filter((b) =>
+          targets.some((target) => compare(b, target, m![2])),
+        );
+      answer(`${list(items)}.`);
+      remember(items);
+      return true;
+    }
     m = p.match(/^which (.+) is sitting on (.+)$/);
     if (m) {
       const dest = unique(m[2]),
         items = resolve(m[1]).filter((b) => supports(dest, b));
+      answer(`${list(items)}.`);
+      remember(items);
+      return true;
+    }
+    m = p.match(
+      /^(?:is|are) (.+?) (directly on top of|on top of|directly on|inside of|in front of|to the left of|to the right of|inside|in|above|over|on|directly under|underneath|beneath|below|under|behind|outside of|outside|left of|right of) (.+)$/,
+    );
+    if (m) {
+      const subjects = resolve(m[1]),
+        targets = resolve(m[3]),
+        matches = subjects.filter((b) =>
+          targets.some((target) => relation(b, target, m![2])),
+        ),
+        existential = /^(?:a |an |any )/.test(m[1]);
+      answer(
+        subjects.length &&
+          (existential
+            ? matches.length > 0
+            : matches.length === subjects.length)
+          ? "Yes."
+          : "No.",
+      );
+      remember(matches);
+      return true;
+    }
+    m = p.match(
+      /^is (.+?) (taller|shorter|narrower|wider|bigger|smaller) than (.+)$/,
+    );
+    if (m && !/^at least one of /.test(m[1])) {
+      const subject = unique(m[1]),
+        targets = resolve(m[3]),
+        yes = targets.some((target) => compare(subject, target, m![2]));
+      answer(yes ? "Yes." : "No.");
+      remember(yes ? [subject] : [], subject);
+      return true;
+    }
+    m = p.match(/^(?:are there|is there) (?:any |a |an )?(.+?)(?: now)?$/);
+    if (m && !/^anything which is /.test(m[1])) {
+      const items = resolve(m[1]);
+      answer(items.length ? `Yes, ${items.length}: ${list(items)}.` : "No.");
+      remember(items);
+      return true;
+    }
+    m = p.match(/^does (.+) exist$/);
+    if (m) {
+      const items = resolve(m[1]);
+      answer(items.length ? "Yes." : "No.");
+      remember(items);
+      return true;
+    }
+    m = p.match(/^(?:show|list)(?: me)? (?:all )?(?:the )?(.+)$/);
+    if (m) {
+      const items = resolve(m[1]);
       answer(`${list(items)}.`);
       remember(items);
       return true;

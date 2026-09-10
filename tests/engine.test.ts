@@ -2,7 +2,8 @@ import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { createEngine } from "../src/engine/generated/legacy";
 import { createGroundedEngine } from "../src/engine/grounded";
-import { toEnglish } from "../src/engine/chinese";
+import { toEnglish, translateReply } from "../src/engine/chinese";
+import { normalizeEnglish } from "../src/engine/language";
 import classic from "../src/engine/classic.json";
 import type { Engine, World } from "../src/engine/types";
 const resources = Object.fromEntries(
@@ -211,5 +212,115 @@ describe("compositional Chinese adapter", () => {
       "Take the blue pyramid.",
     );
     expect(toEnglish("请给我讲个笑话").error).toBeTruthy();
+  });
+});
+
+describe("expanded bilingual language", () => {
+  it.each([
+    ["请帮我抓起那块蓝色积木", "Pick up the blue block."],
+    ["把它拿起来", "Pick up it."],
+    ["红色立方块放到桌面上", "Put the red cube on the table."],
+    ["在盒子里放蓝色棱锥", "Put the blue pyramid in the box."],
+    ["把红色积木和蓝色棱锥叠起来", "Stack the red block and the blue pyramid."],
+    ["盒子里的蓝色积木在哪里", "Where is the blue block in the box?"],
+    ["红色积木的颜色是什么", "What color is the red block?"],
+    ["桌上有几个绿色方块", "How many green cubes are on the table?"],
+    ["容器里有啥", "What is in the box?"],
+    ["什么支撑红色棱锥", "What supports the red pyramid?"],
+    ["盒子支撑着什么", "What does the box support?"],
+    ["有没有红色积木", "Are there any red blocks?"],
+    ["红色积木在盒子里吗", "Is the red block in the box?"],
+    ["请问蓝色棱锥在哪呢", "Where is the blue pyramid?"],
+    ["桌子上有几块积木", "How many blocks are on the table?"],
+    ["有蓝色棱锥吗", "Are there any blue pyramids?"],
+    ["蓝色棱锥位于盒子中吗", "Is the blue pyramid in the box?"],
+    [
+      "红色立方块比蓝色积木小吗",
+      "Is the red cube smaller than the blue block?",
+    ],
+    ["列出盒子中的积木", "List the block in the box."],
+  ])("normalizes %s", (input, expected) => {
+    expect(toEnglish(input)).toMatchObject({
+      text: expected,
+      translated: true,
+    });
+  });
+
+  it.each([
+    ["Where's the scarlet brick?", "where is the red block"],
+    [
+      "Could you please lift the azure cuboid!",
+      "could you please lift the blue block",
+    ],
+    ["What is within the container?", "what is inside the box"],
+    [
+      "Which item is atop the work surface?",
+      "which object is on top of the table",
+    ],
+  ])("normalizes English vocabulary in %s", (input, expected) => {
+    expect(normalizeEnglish(input)).toBe(expected);
+  });
+
+  it("executes English paraphrases through the grounded planner", () => {
+    const e = fresh();
+    expect(run(e, "Could you please grab the blue brick?").world.held).toBe(
+      "block-5",
+    );
+    expect(run(e, "What is the colour of it?").reply).toBe("blue.");
+    expect(run(e, "Put it down.").world.held).toBeNull();
+    expect(run(e, "Are there any scarlet bricks?").reply).toMatch(/^Yes/);
+    expect(run(e, "Count the pyramids.").reply).toMatch(/^3:/);
+    expect(run(e, "What supports the red pyramid?").reply).toContain("cube");
+    expect(run(e, "Which pyramids are inside the crate?").reply).toContain(
+      "blue pyramid",
+    );
+    expect(run(e, "Is the blue pyramid inside the container?").reply).toBe(
+      "Yes.",
+    );
+    expect(
+      run(e, "Is the red cube smaller than the blue block?").reply,
+    ).toMatch(/^(?:Yes|No)\.$/);
+  });
+
+  it("gives equivalent Chinese and English commands the same world state", () => {
+    const english = fresh(),
+      chinese = fresh();
+    const en = run(english, "Please pick up the blue block.").world;
+    const mapped = toEnglish("请帮我拿起蓝色积木");
+    expect(mapped.error).toBeUndefined();
+    const zh = run(chinese, mapped.text).world;
+    expect(zh.held).toBe(en.held);
+    expect(zh.objects).toEqual(en.objects);
+
+    const enPlaced = run(english, "Put it on the table.").world,
+      placement = toEnglish("把它放在桌面上");
+    expect(placement.error).toBeUndefined();
+    const zhPlaced = run(chinese, placement.text).world;
+    expect(zhPlaced.held).toBe(enPlaced.held);
+    expect(zhPlaced.objects).toEqual(enPlaced.objects);
+  });
+
+  it("executes generated Chinese query forms instead of only translating them", () => {
+    const e = fresh();
+    const ask = (input: string) => {
+      const mapped = toEnglish(input);
+      expect(mapped.error).toBeUndefined();
+      return run(e, mapped.text).reply;
+    };
+    expect(ask("盒子里的蓝色积木在哪里")).toContain("in the box");
+    expect(ask("桌上有几个绿色方块")).toMatch(/^\d+:/);
+    expect(ask("什么支撑红色棱锥")).toContain("cube");
+    expect(ask("有没有蓝色棱锥")).toMatch(/^Yes/);
+    expect(ask("红色立方块比蓝色积木小吗")).toMatch(/^(?:Yes|No)\.$/);
+  });
+
+  it.each([
+    ["I am holding the blue block.", "我正拿着蓝色积木。"],
+    ["the blue block is in the box.", "蓝色积木在盒子里。"],
+    ["the green pyramid is on the red cube.", "绿色棱锥位于红色立方块上。"],
+    ["the red block is not supported.", "红色积木没有支撑物。"],
+    ["nothing.", "没有物体。"],
+  ])("localizes the reply %s", (reply, expected) => {
+    expect(translateReply(reply)).toBe(expected);
   });
 });
