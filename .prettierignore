@@ -1,0 +1,8 @@
+node_modules
+dist
+vendor
+src/engine/generated
+pnpm-lock.yaml
+public
+docs/*audit.json
+_dev_logs

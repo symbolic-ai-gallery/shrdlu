@@ -1,0 +1,217 @@
+[
+  {
+    "en": "PICK UP A BIG RED BLOCK.",
+    "answer": "OK. (does it)",
+    "zh": "拿起一个大的红色积木块。"
+  },
+  {
+    "en": "GRASP THE PYRAMID.",
+    "answer": "I DON'T UNDERSTAND WHICH PYRAMID YOU MEAN.",
+    "zh": "抓住那个棱锥。"
+  },
+  {
+    "en": "FIND A BLOCK WHICH IS TALLER THAN THE ONE YOU ARE HOLDING AND PUT IT INTO THE BOX.",
+    "answer": "BY \"IT\", I ASSUME YOU MEAN THE BLOCK WHICH IS TALLER THAN THE ONE I AM HOLDING. OK. (does it)",
+    "zh": "找到一个比你正拿着的积木块更高的积木块，把它放进盒子里。"
+  },
+  {
+    "en": "WHAT DOES THE BOX CONTAIN?",
+    "answer": "THE BLUE PYRAMID AND THE BLUE BLOCK.",
+    "zh": "盒子里装着什么？"
+  },
+  {
+    "en": "WHAT IS THE PYRAMID SUPPORTED BY?",
+    "answer": "THE BOX.",
+    "zh": "那个棱锥由什么支撑？"
+  },
+  {
+    "en": "HOW MANY BLOCKS ARE NOT IN THE BOX?",
+    "answer": "FOUR OF THEM.",
+    "zh": "有多少个积木块不在盒子里？"
+  },
+  {
+    "en": "IS AT LEAST ONE OF THEM NARROWER THAN THE ONE WHICH I TOLD YOU TO PICK UP?",
+    "answer": "YES, THE RED CUBE.",
+    "zh": "它们当中是否至少有一个比我让你拿起的那个更窄？"
+  },
+  {
+    "en": "IS IT SUPPORTED?",
+    "answer": "YES, BY THE TABLE.",
+    "zh": "它有支撑物吗？"
+  },
+  {
+    "en": "CAN THE TABLE PICK UP BLOCKS?",
+    "answer": "NO.",
+    "zh": "桌子能拿起积木块吗？"
+  },
+  {
+    "en": "CAN A PYRAMID BE SUPPORTED BY A BLOCK?",
+    "answer": "YES.",
+    "zh": "棱锥可以由积木块支撑吗？"
+  },
+  {
+    "en": "CAN A PYRAMID SUPPORT A PYRAMID?",
+    "answer": "I DON'T KNOW.",
+    "zh": "棱锥可以支撑另一个棱锥吗？"
+  },
+  {
+    "en": "STACK UP TWO PYRAMIDS.",
+    "answer": "I CAN'T.",
+    "zh": "把两个棱锥叠起来。"
+  },
+  {
+    "en": "WILL YOU PLEASE STACK UP BOTH OF THE RED BLOCKS AND EITHER A GREEN CUBE OR A PYRAMID?",
+    "answer": "OK. (does it)",
+    "zh": "请把两个红色积木块，再加上一个绿色立方块或一个棱锥，叠成一摞好吗？"
+  },
+  {
+    "en": "WHICH CUBE IS SITTING ON THE TABLE?",
+    "answer": "THE LARGE GREEN ONE WHICH SUPPORTS THE RED PYRAMID.",
+    "zh": "哪个立方块正放在桌子上？"
+  },
+  {
+    "en": "IS THERE A LARGE BLOCK BEHIND A PYRAMID?",
+    "answer": "YES, THREE OF THEM: A LARGE RED ONE, A LARGE GREEN CUBE, AND THE BLUE ONE.",
+    "zh": "是否有一个大积木块位于某个棱锥后面？"
+  },
+  {
+    "en": "PUT A SMALL ONE ONTO THE GREEN CUBE WHICH SUPPORTS A PYRAMID.",
+    "answer": "OK. (does it)",
+    "zh": "把一个小积木块放到那个支撑着棱锥的绿色立方块上。"
+  },
+  {
+    "en": "PUT THE LITTLEST PYRAMID ON TOP OF IT.",
+    "answer": "OK. (does it)",
+    "zh": "把最小的棱锥放到它上面。"
+  },
+  {
+    "en": "DOES THE SHORTEST THING THE TALLEST PYRAMID'S SUPPORT SUPPORTS SUPPORT ANYTHING GREEN?",
+    "answer": "YES, THE GREEN PYRAMID.",
+    "zh": "最高棱锥的支撑物所支撑的最矮物体，是否又支撑着某个绿色物体？"
+  },
+  {
+    "en": "WHAT COLOR IS IT?",
+    "answer": "BY \"IT\", I ASSUME YOU MEAN THE SHORTEST THING THE TALLEST PYRAMID'S SUPPORT SUPPORTS. RED",
+    "zh": "它是什么颜色？"
+  },
+  {
+    "en": "HOW MANY THINGS ARE ON TOP OF GREEN CUBES?",
+    "answer": "I'M NOT SURE WHAT YOU MEAN BY \"ON TOP OF \"IN THE PHRASE \"ON TOP OF GREEN CUBES \" . DO YOU MEAN: 1 - DIRECTLY ON THE SURFACE 2 - ANWHERE ON TOP OF ?",
+    "zh": "有多少个物体位于绿色立方块上方？"
+  },
+  {
+    "en": "2",
+    "answer": "THREE OF THEM.",
+    "zh": "2。"
+  },
+  {
+    "en": "HAD YOU TOUCHED ANY PYRAMID BEFORE YOU PUT THE GREEN ONE ON THE LITTLE CUBE?",
+    "answer": "YES, THE GREEN ONE.",
+    "zh": "在你把绿色棱锥放到那个小立方块上之前，你碰过任何棱锥吗？"
+  },
+  {
+    "en": "WHEN DID YOU PICK IT UP?",
+    "answer": "WHILE I WAS STACKING UP THE RED CUBE, A LARGE RED BLOCK AND A LARGE GREEN CUBE.",
+    "zh": "你什么时候把它拿起来的？"
+  },
+  {
+    "en": "WHY?",
+    "answer": "TO GET RID OF IT.",
+    "zh": "为什么？"
+  },
+  {
+    "en": "WHY DID YOU DO THAT?",
+    "answer": "TO CLEAN OFF THE RED CUBE.",
+    "zh": "你为什么要那么做？"
+  },
+  {
+    "en": "WHY DID YOU CLEAR OFF THAT CUBE?",
+    "answer": "TO PUT IT ON A LARGE GREEN CUBE.",
+    "zh": "你为什么要清空那个立方块？"
+  },
+  {
+    "en": "WHY DID YOU DO THAT?",
+    "answer": "TO STACK UP THE RED CUBE , A LARGE RED BLOCK AND A LARGE GREEN CUBE.",
+    "zh": "你为什么要那么做？"
+  },
+  {
+    "en": "WHY DID YOU DO THAT?",
+    "answer": "BECAUSE YOU ASKED ME TO.",
+    "zh": "你为什么要那么做？"
+  },
+  {
+    "en": "HOW DID YOU DO IT?",
+    "answer": "BY PUTTING A LARGE RED BLOCK ON THE TABLE ; THEN LETTING GO OF IT ; THEN PUTTING A LARGE GREEN CUBE ON IT ; THEN LETTING GO OF THAT CUBE ; THEN PUTTING THE RED CUBE ON THAT CUBE; THEN LETTING GO OF THAT CUBE.",
+    "zh": "你是怎么做的？"
+  },
+  {
+    "en": "HOW MANY OBJECTS DID YOU TOUCH WHILE YOU WERE DOING IT?",
+    "answer": "FOUR OF THEM.",
+    "zh": "做这件事时，你一共碰了多少个物体？"
+  },
+  {
+    "en": "WHAT DID THE RED CUBE SUPPORT BEFORE YOU STARTED TO CLEAN IT OFF?",
+    "answer": "THE GREEN PYRAMID.",
+    "zh": "在你开始清空红色立方块之前，它支撑着什么？"
+  },
+  {
+    "en": "THERE WERE FIVE BLOCKS TO THE LEFT OF THE BOX THEN.",
+    "answer": "NO, ONLY FOUR OF THEM: THE RED CUBE, TWO LARGE GREEN CUBES AND A LARGE RED BLOCK.",
+    "zh": "那时盒子左边有五个积木块。"
+  },
+  {
+    "en": "PUT THE BLUE PYRAMID ON THE BLOCK IN THE BOX.",
+    "answer": "OK. (does it)",
+    "zh": "把蓝色棱锥放到盒子里的那个积木块上。"
+  },
+  {
+    "en": "IS THERE ANYTHING WHICH IS BIGGER THAN EVERY PYRAMID BUT IS NOT AS WIDE AS THE THING THAT SUPPORTS IT?",
+    "answer": "YES, THE BLUE BLOCK.",
+    "zh": "有没有某个物体比所有棱锥都大，却又没有支撑它的那个物体那么宽？"
+  },
+  {
+    "en": "DOES A STEEPLE",
+    "answer": "SORRY, I DON'T KNOW THE WORD \"STEEPLE\".",
+    "zh": "一个尖塔（steeple）是否——"
+  },
+  {
+    "en": "A \"STEEPLE\" IS A STACK WHICH CONTAINS TWO GREEN CUBES AND A PYRAMID.",
+    "answer": "I UNDERSTAND.",
+    "zh": "“尖塔”是由两个绿色立方块和一个棱锥组成的一摞物体。"
+  },
+  {
+    "en": "ARE THERE ANY STEEPLES NOW?",
+    "answer": "NO.",
+    "zh": "现在有尖塔吗？"
+  },
+  {
+    "en": "BUILD ONE.",
+    "answer": "OK. (does it)",
+    "zh": "搭一个。"
+  },
+  {
+    "en": "CALL THE BIGGEST BLOCK \"SUPERBLOCK\".",
+    "answer": "OK.",
+    "zh": "把最大的积木块叫作“超级积木（SUPERBLOCK）”。"
+  },
+  {
+    "en": "HAVE YOU PICKED SUPERBLOCK UP SINCE WE BEGAN?",
+    "answer": "YES.",
+    "zh": "从我们开始对话以来，你拿起过超级积木吗？"
+  },
+  {
+    "en": "WHY DID YOU DROP IT?",
+    "answer": "BY \"IT\", I ASSUME YOU MEAN THE SUPERBLOCK. I CAN'T EXPLAIN A NON-EXISTENT EVENT.",
+    "zh": "你为什么把它放下？"
+  },
+  {
+    "en": "IS THERE ANYTHING TO THE RIGHT OF THE RED PYRAMID?",
+    "answer": "YES, FOUR THINGS: THE BOX , THE RED CUBE, THE BLUE PYRAMID AND THE BLOCK NAMED SUPERBLOCK",
+    "zh": "红色棱锥的右边有什么东西吗？"
+  },
+  {
+    "en": "THANK YOU.",
+    "answer": "YOU'RE WELCOME!",
+    "zh": "谢谢。"
+  }
+]

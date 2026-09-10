@@ -1,0 +1,432 @@
+[
+  {
+    "turn": 1,
+    "input": "PICK UP A BIG RED BLOCK.",
+    "expected": "OK. (does it)",
+    "actual": [
+      "Ok"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 2,
+    "input": "GRASP THE PYRAMID.",
+    "expected": "I DON'T UNDERSTAND WHICH PYRAMID YOU MEAN.",
+    "actual": [
+      "I can not disambiguate the pyramid"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 3,
+    "input": "FIND A BLOCK WHICH IS TALLER THAN THE ONE YOU ARE HOLDING AND PUT IT INTO THE BOX.",
+    "expected": "BY \"IT\", I ASSUME YOU MEAN THE BLOCK WHICH IS TALLER THAN THE ONE I AM HOLDING. OK. (does it)",
+    "actual": [
+      "Ok"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 4,
+    "input": "WHAT DOES THE BOX CONTAIN?",
+    "expected": "THE BLUE PYRAMID AND THE BLUE BLOCK.",
+    "actual": [
+      "The pyramid inside of the box"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 5,
+    "input": "WHAT IS THE PYRAMID SUPPORTED BY?",
+    "expected": "THE BOX.",
+    "actual": [
+      "The box"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 6,
+    "input": "HOW MANY BLOCKS ARE NOT IN THE BOX?",
+    "expected": "FOUR OF THEM.",
+    "actual": [
+      "5"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 7,
+    "input": "IS AT LEAST ONE OF THEM NARROWER THAN THE ONE WHICH I TOLD YOU TO PICK UP?",
+    "expected": "YES, THE RED CUBE.",
+    "actual": [
+      "I do not understand least"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 8,
+    "input": "IS IT SUPPORTED?",
+    "expected": "YES, BY THE TABLE.",
+    "actual": [
+      "Yes"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 9,
+    "input": "CAN THE TABLE PICK UP BLOCKS?",
+    "expected": "NO.",
+    "actual": [
+      "No"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 10,
+    "input": "CAN A PYRAMID BE SUPPORTED BY A BLOCK?",
+    "expected": "YES.",
+    "actual": [
+      "Yes"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 11,
+    "input": "CAN A PYRAMID SUPPORT A PYRAMID?",
+    "expected": "I DON'T KNOW.",
+    "actual": [
+      "No"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 12,
+    "input": "STACK UP TWO PYRAMIDS.",
+    "expected": "I CAN'T.",
+    "actual": [
+      "I cannot do that"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 13,
+    "input": "WILL YOU PLEASE STACK UP BOTH OF THE RED BLOCKS AND EITHER A GREEN CUBE OR A PYRAMID?",
+    "expected": "OK. (does it)",
+    "actual": [
+      "I do not understand both"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 14,
+    "input": "WHICH CUBE IS SITTING ON THE TABLE?",
+    "expected": "THE LARGE GREEN ONE WHICH SUPPORTS THE RED PYRAMID.",
+    "actual": [
+      "The cube underneath the red pyramid, the clear cube and the red cube"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 15,
+    "input": "IS THERE A LARGE BLOCK BEHIND A PYRAMID?",
+    "expected": "YES, THREE OF THEM: A LARGE RED ONE, A LARGE GREEN CUBE, AND THE BLUE ONE.",
+    "actual": [
+      "Yes"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 16,
+    "input": "PUT A SMALL ONE ONTO THE GREEN CUBE WHICH SUPPORTS A PYRAMID.",
+    "expected": "OK. (does it)",
+    "actual": [
+      "I cannot do that"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 17,
+    "input": "PUT THE LITTLEST PYRAMID ON TOP OF IT.",
+    "expected": "OK. (does it)",
+    "actual": [
+      "I do not see it"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 18,
+    "input": "DOES THE SHORTEST THING THE TALLEST PYRAMID'S SUPPORT SUPPORTS SUPPORT ANYTHING GREEN?",
+    "expected": "YES, THE GREEN PYRAMID.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 19,
+    "input": "WHAT COLOR IS IT?",
+    "expected": "BY \"IT\", I ASSUME YOU MEAN THE SHORTEST THING THE TALLEST PYRAMID'S SUPPORT SUPPORTS. RED",
+    "actual": [
+      "I do not see it"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 20,
+    "input": "HOW MANY THINGS ARE ON TOP OF GREEN CUBES?",
+    "expected": "I'M NOT SURE WHAT YOU MEAN BY \"ON TOP OF \"IN THE PHRASE \"ON TOP OF GREEN CUBES \" . DO YOU MEAN: 1 - DIRECTLY ON THE SURFACE 2 - ANWHERE ON TOP OF ?",
+    "actual": [
+      "1"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 21,
+    "input": "2",
+    "expected": "THREE OF THEM.",
+    "actual": [
+      "I did not ask anything"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 22,
+    "input": "HAD YOU TOUCHED ANY PYRAMID BEFORE YOU PUT THE GREEN ONE ON THE LITTLE CUBE?",
+    "expected": "YES, THE GREEN ONE.",
+    "actual": [
+      "I do not understand touched"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 23,
+    "input": "WHEN DID YOU PICK IT UP?",
+    "expected": "WHILE I WAS STACKING UP THE RED CUBE, A LARGE RED BLOCK AND A LARGE GREEN CUBE.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 24,
+    "input": "WHY?",
+    "expected": "TO GET RID OF IT.",
+    "actual": [
+      "I don't know"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 25,
+    "input": "WHY DID YOU DO THAT?",
+    "expected": "TO CLEAN OFF THE RED CUBE.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 26,
+    "input": "WHY DID YOU CLEAR OFF THAT CUBE?",
+    "expected": "TO PUT IT ON A LARGE GREEN CUBE.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 27,
+    "input": "WHY DID YOU DO THAT?",
+    "expected": "TO STACK UP THE RED CUBE , A LARGE RED BLOCK AND A LARGE GREEN CUBE.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 28,
+    "input": "WHY DID YOU DO THAT?",
+    "expected": "BECAUSE YOU ASKED ME TO.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 29,
+    "input": "HOW DID YOU DO IT?",
+    "expected": "BY PUTTING A LARGE RED BLOCK ON THE TABLE ; THEN LETTING GO OF IT ; THEN PUTTING A LARGE GREEN CUBE ON IT ; THEN LETTING GO OF THAT CUBE ; THEN PUTTING THE RED CUBE ON THAT CUBE; THEN LETTING GO OF THAT CUBE.",
+    "actual": [
+      "I can not parse the sentence"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 30,
+    "input": "HOW MANY OBJECTS DID YOU TOUCH WHILE YOU WERE DOING IT?",
+    "expected": "FOUR OF THEM.",
+    "actual": [
+      "I do not understand touch"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 31,
+    "input": "WHAT DID THE RED CUBE SUPPORT BEFORE YOU STARTED TO CLEAN IT OFF?",
+    "expected": "THE GREEN PYRAMID.",
+    "actual": [
+      "I do not understand started"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 32,
+    "input": "THERE WERE FIVE BLOCKS TO THE LEFT OF THE BOX THEN.",
+    "expected": "NO, ONLY FOUR OF THEM: THE RED CUBE, TWO LARGE GREEN CUBES AND A LARGE RED BLOCK.",
+    "actual": [
+      "I can not disambiguate there"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 33,
+    "input": "PUT THE BLUE PYRAMID ON THE BLOCK IN THE BOX.",
+    "expected": "OK. (does it)",
+    "actual": [
+      "I do not see the block in the box"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 34,
+    "input": "IS THERE ANYTHING WHICH IS BIGGER THAN EVERY PYRAMID BUT IS NOT AS WIDE AS THE THING THAT SUPPORTS IT?",
+    "expected": "YES, THE BLUE BLOCK.",
+    "actual": [
+      "I do not understand as"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 35,
+    "input": "DOES A STEEPLE",
+    "expected": "SORRY, I DON'T KNOW THE WORD \"STEEPLE\".",
+    "actual": [
+      "I do not understand steeple"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 36,
+    "input": "A \"STEEPLE\" IS A STACK WHICH CONTAINS TWO GREEN CUBES AND A PYRAMID.",
+    "expected": "I UNDERSTAND.",
+    "actual": [
+      "I do not understand \""
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 37,
+    "input": "ARE THERE ANY STEEPLES NOW?",
+    "expected": "NO.",
+    "actual": [
+      "I do not understand steeples"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 38,
+    "input": "BUILD ONE.",
+    "expected": "OK. (does it)",
+    "actual": [
+      "I cannot do that"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 39,
+    "input": "CALL THE BIGGEST BLOCK \"SUPERBLOCK\".",
+    "expected": "OK.",
+    "actual": [
+      "I do not understand \""
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 40,
+    "input": "HAVE YOU PICKED SUPERBLOCK UP SINCE WE BEGAN?",
+    "expected": "YES.",
+    "actual": [
+      "I do not understand superblock"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 41,
+    "input": "WHY DID YOU DROP IT?",
+    "expected": "BY \"IT\", I ASSUME YOU MEAN THE SUPERBLOCK. I CAN'T EXPLAIN A NON-EXISTENT EVENT.",
+    "actual": [
+      "I don't know"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 42,
+    "input": "IS THERE ANYTHING TO THE RIGHT OF THE RED PYRAMID?",
+    "expected": "YES, FOUR THINGS: THE BOX , THE RED CUBE, THE BLUE PYRAMID AND THE BLOCK NAMED SUPERBLOCK",
+    "actual": [
+      "Yes"
+    ],
+    "error": null,
+    "held": "block-3"
+  },
+  {
+    "turn": 43,
+    "input": "THANK YOU.",
+    "expected": "YOU'RE WELCOME!",
+    "actual": [
+      "You are welcome"
+    ],
+    "error": null,
+    "held": "block-3"
+  }
+]

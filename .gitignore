@@ -485,3 +485,9 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+# Generated language engine (rebuilt from attributed vendor source)
+src/engine/generated/
+dist/
+node_modules/
+*.tsbuildinfo

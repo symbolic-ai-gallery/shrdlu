@@ -1,0 +1,86 @@
+# SHRDLU · Blocks World Laboratory
+
+一个可在浏览器离线推理的 SHRDLU 现代复刻：React 工作台、Three.js 积木世界、英文符号语言引擎，以及中文输入适配。
+
+**完成了原始演示 43 轮英文及对应中文的可执行流程和回归检查；这不等于原版所有英文表达的完全兼容，也不是 MacLisp 的忠实移植。** 几何布局、部分关系查询的结果、生成措辞以及开放式语言的覆盖范围仍有差异，见 [兼容性说明](docs/COMPATIBILITY.md)。历史回答只出现在原版资料面板，不会作为运行时回答。
+
+## 运行
+
+使用 Volta 固定 Node.js `24.19.0`，使用 pnpm `11.23.0`。固定版本已写入 `package.json` 的 `volta` 与 `packageManager`。
+
+```sh
+volta install node@24.19.0
+volta install pnpm@11.23.0
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+若旧版 Volta 提示不支持 pnpm，可先按 Volta 提示启用其 pnpm 支持（`VOLTA_FEATURE_PNPM=1`），或使用已安装的 pnpm 11.23.0。
+
+Vite 默认地址为 `http://127.0.0.1:5173`（背景知识入口页）；实验工作台为 `http://127.0.0.1:5173/#/lab`。端口占用时以控制台打印的地址为准。使用 hash 路由，部署为普通静态文件也可直接打开实验。
+
+```sh
+pnpm test       # 行为回归：20 个测试，包括中英文各 43 轮
+pnpm audit      # 按顺序记录 43 轮的原版回答和实际回答
+pnpm build      # 生成语言引擎 → 严格 TypeScript 检查 → 生产构建
+pnpm preview    # 预览生产构建
+pnpm format    # 格式化应用源码，保留上游源码格式
+```
+
+本项目只生成静态文件 `dist/`，无后端、数据库、模型服务或 API Key。首次安装需要网络；运行时所有 XML、脚本和图形资源均从本应用加载。Web Worker 中运行语言与规划引擎，界面线程绘制三维世界。支持现代浏览器的 WebGL；WebGL 不可用时仍可使用对话与物体列表。
+
+## 使用
+
+- 手机端使用紧凑三维视图、横向物体列表、触控按钮和“输入指令 / 查看世界”跳转；背景资料集中在入口页。
+- 输入 `Pick up a big red block.` 或 `拿起一个大的红色积木块。`
+- 继续输入 `Put it in the box.`，观察机械臂和世界状态。
+- 查询颜色、数量、包含关系、支撑关系以及位置。
+- 不明确的物体描述会请求澄清，例如 `Grasp the pyramid.` → `the blue pyramid`。
+- 对大物体的操作会先清理其上方的物体；非法堆叠会拒绝，失败计划不会改变世界。
+- 定义 `A crown is a stack that contains two red blocks and a green pyramid.`，然后 `Build a crown.`。
+- 可命名物体：`Call the red cube Ruby.` → `Pick up Ruby.`。
+- 点“运行演示”执行短对话；点“原版对话”查看全部历史资料，或用“试验下一句”顺序运行经典对话。
+- 拖动旋转、滚轮缩放、点击物体查看尺寸和位置；可切换标签/线框、复位视角、重置世界、导出对话。
+- 中文通过经典句子对照与组合句式转换成英文，转换结果显示在对话下方。回答保留英文原文，部分受控回答附中文解释。
+
+## 技术栈与结构
+
+- Volta + pnpm（含锁文件）
+- React 19 + Vite 7 + TypeScript 5（应用代码严格类型检查）
+- Tailwind CSS 4 + Base UI Dialog / Switch
+- Three.js + OrbitControls
+- Vitest + esbuild；无 LLM 依赖
+
+```text
+src/
+  Landing.tsx                专业背景知识入口页
+  App.tsx                    实验台、对话、历史资料与物体检查
+  components/WorldView.tsx   Three.js 场景、机械臂、选择与相机
+  engine/
+    grounded.ts              实时指代、空间查询、规划、概念与行为历史
+    chinese.ts               中文词组与句式转换
+    classic.json             用户提供资料中的 43 轮中英文记录
+    worker.ts                推理工作线程、时间预算与消息协议
+    useEngine.ts             React 生命周期、重置、超时和状态同步
+    webmcp.ts                可选浏览器工具接口
+scripts/
+  build-engine.mjs           将上游全局 TS 文件打包为隔离 ESM 模块
+  engine-bridge.ts           XML 适配与共享世界边界
+  audit-engine.mjs           历史对话审计
+vendor/shrdlu/               上游引擎源码、许可证及固定提交信息
+public/engine/               本体、英语语法规则与积木世界知识库
+```
+
+优先由新增的有限领域解释器处理支持的表达，所有答案读取实时状态，所有规划生成世界状态序列；其他英文交给上游自然语言引擎。两者使用同一个世界，通过明确的快照边界同步。渲染插值只影响显示，不更改逻辑坐标。
+
+## 资料与授权
+
+依据用户提供的原始存档网页、中文翻译、`参考实现.md` 和 MacLisp `blockp.txt` / `blurb.txt`。未将私人文献目录整体复制到仓库。
+
+- [Terry Winograd 的 SHRDLU 原始主页](https://hci.stanford.edu/winograd/shrdlu/)
+- [Santi Ontañón 的 TypeScript 实现](https://github.com/santiontanon/SHRDLU)，固定提交见 [UPSTREAM.md](vendor/shrdlu/UPSTREAM.md)，Apache-2.0
+- [第三方声明](THIRD_PARTY_NOTICES.md)
+
+上游经典积木引擎包含一个动作结束时清空 handler 后再次读取 handler 的空引用错误；本仓库保留完成的 handler 再进行检查，修改位置和原因见第三方声明。上游源码独立保存，不以关闭应用 TypeScript 检查的方式混入现代 React 代码。
+
+验证情况与尚未测试的项目见 [VALIDATION.md](docs/VALIDATION.md)。
