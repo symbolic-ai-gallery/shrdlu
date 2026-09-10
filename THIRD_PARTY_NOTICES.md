@@ -21,3 +21,5 @@ The 43-turn historical dialogue and its supplied Chinese translation were transc
 ## Interface dependencies
 
 React, Vite, TypeScript, Tailwind CSS, Base UI, Three.js, Lucide, xmldom, esbuild, and Vitest retain their respective licenses in their package distributions. Package versions and integrity hashes are recorded in `pnpm-lock.yaml`.
+
+`react-bottom-fixed` 0.2.0 by almond-bongbong is used for the iOS input dock under the MIT license. Source: https://github.com/almond-bongbong/react-bottom-fixed . Integration changes are confined to the application's wrapper and CSS; the installed package source is unchanged.
