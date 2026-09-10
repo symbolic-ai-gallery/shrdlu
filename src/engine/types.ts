@@ -10,7 +10,24 @@ export type Block = {
   dy: number;
   dz: number;
 };
+export type MotionPhase =
+  | "approach"
+  | "descend"
+  | "grasp"
+  | "lift"
+  | "transfer"
+  | "lower"
+  | "release"
+  | "retreat";
+export type Motion = {
+  phase: MotionPhase;
+  objectId: string;
+  duration: number;
+  grip: number;
+};
 export type World = {
+  motion?: Motion;
+  frameId?: number;
   objects: Block[];
   held: string | null;
   time: number;

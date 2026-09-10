@@ -14,6 +14,7 @@ export function useEngine() {
     [status, setStatus] = useState<"loading" | "ready" | "busy" | "error">(
       "loading",
     );
+  const [generation, setGeneration] = useState(0);
   const worker = useRef<Worker | null>(null),
     counter = useRef(0),
     state = useRef(status),
@@ -39,6 +40,7 @@ export function useEngine() {
   const reset = useCallback(() => {
     clearTimeout(watchdog.current);
     worker.current?.terminate();
+    setGeneration((g) => g + 1);
     setPhase("loading");
     setMessages([]);
     setWorld(null);
@@ -61,6 +63,7 @@ export function useEngine() {
         add("system", data.message);
         return;
       }
+      clearTimeout(watchdog.current);
       setWorld(data.world);
       data.messages.forEach((text) => add("assistant", text));
       if (data.type === "ready" || data.type === "done") {
@@ -109,5 +112,8 @@ export function useEngine() {
     },
     [add],
   );
-  return { world, messages, status, submit, reset };
+  const acknowledge = useCallback((frameId: number) => {
+    worker.current?.postMessage({ type: "ack", frameId });
+  }, []);
+  return { world, messages, status, submit, reset, acknowledge, generation };
 }

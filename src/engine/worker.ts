@@ -1,12 +1,43 @@
 import { createEngine } from "./generated/legacy";
 import { createGroundedEngine } from "./grounded";
 import type { Engine, Resources } from "./types";
-let engine: Engine;
-let busy = false;
-// Upstream traces are extremely verbose; keep errors, but do not flood devtools.
+let engine: Engine,
+  busy = false,
+  waitingFor: number | null = null,
+  sequence = 0,
+  computeMs = 0;
 console.log = () => {};
+function fail(error: unknown) {
+  busy = false;
+  waitingFor = null;
+  self.postMessage({ type: "error", message: String(error) });
+}
+function advance() {
+  try {
+    const started = performance.now();
+    const done = engine.step();
+    computeMs += performance.now() - started;
+    if (computeMs > 30000)
+      throw new Error("Reasoning exceeded its time budget. Reset to continue.");
+    const frameId = ++sequence;
+    waitingFor = done ? null : frameId;
+    self.postMessage({
+      type: done ? "done" : "state",
+      world: { ...engine.snapshot(), frameId },
+      messages: engine.drain(),
+    });
+    if (done) busy = false;
+  } catch (error) {
+    fail(error);
+  }
+}
 self.onmessage = async (
-  event: MessageEvent<{ type: string; text?: string; base?: string }>,
+  event: MessageEvent<{
+    type: string;
+    text?: string;
+    base?: string;
+    frameId?: number;
+  }>,
 ) => {
   try {
     if (event.data.type === "init") {
@@ -24,43 +55,26 @@ self.onmessage = async (
       engine = createGroundedEngine(createEngine(resources));
       self.postMessage({
         type: "ready",
-        world: engine.snapshot(),
+        world: { ...engine.snapshot(), frameId: 0 },
         messages: engine.drain(),
       });
     } else if (event.data.type === "submit" && engine && !busy) {
       busy = true;
-      engine.submit(event.data.text!);
+      computeMs = 0;
       const started = performance.now();
-      const tick = () => {
-        try {
-          let idle = false;
-          const batch = performance.now();
-          for (let i = 0; i < 1 && performance.now() - batch < 25; i++) {
-            if (engine.step()) {
-              idle = true;
-              break;
-            }
-          }
-          self.postMessage({
-            type: idle ? "done" : "state",
-            world: engine.snapshot(),
-            messages: engine.drain(),
-          });
-          if (idle) busy = false;
-          else if (performance.now() - started > 30000)
-            throw new Error(
-              "Planning exceeded 30 seconds. Reset the world to continue.",
-            );
-          else setTimeout(tick, 16);
-        } catch (error) {
-          busy = false;
-          self.postMessage({ type: "error", message: String(error) });
-        }
-      };
-      tick();
+      engine.submit(event.data.text!);
+      computeMs += performance.now() - started;
+      advance();
+    } else if (
+      event.data.type === "ack" &&
+      busy &&
+      event.data.frameId === waitingFor
+    ) {
+      // Back-pressure: the next logical pose cannot overwrite an unfinished animation.
+      waitingFor = null;
+      advance();
     }
   } catch (error) {
-    busy = false;
-    self.postMessage({ type: "error", message: String(error) });
+    fail(error);
   }
 };

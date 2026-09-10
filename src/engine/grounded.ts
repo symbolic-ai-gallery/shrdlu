@@ -1,4 +1,4 @@
-import type { Block, Engine, World } from "./types";
+import type { Block, Engine, World, MotionPhase } from "./types";
 // A bounded compositional interpreter over the shared world. It never reads the
 // historical transcript. Plans, references, answers and explanations use live facts.
 type Event = {
@@ -38,6 +38,10 @@ export function createGroundedEngine(legacy: Engine): Engine {
   const table = state.objects.find((b) => b.type === "table")!;
   table.dx = 36;
   table.dz = 36;
+  const initialArm = state.objects.find((b) => b.type === "arm")!;
+  initialArm.x = 13;
+  initialArm.y = 34;
+  initialArm.z = 17;
   legacy.replaceWorld(state);
   let rendered = copy(state),
     messages: string[] = [],
@@ -242,14 +246,26 @@ export function createGroundedEngine(legacy: Engine): Engine {
       );
     return found[0];
   };
-  const emit = () => {
+  const armAt = (b: Block, y: number) => {
     const arm = state.objects.find((b) => b.type === "arm")!;
-    if (state.held) {
-      const b = get(state.held);
-      arm.x = b.x + b.dx / 2 - 1;
-      arm.y = b.y + b.dy;
-      arm.z = b.z + b.dz / 2 - 1;
-    } else arm.y = 32;
+    arm.x = b.x + b.dx / 2 - 1;
+    arm.y = y;
+    arm.z = b.z + b.dz / 2 - 1;
+  };
+  const clearance = () =>
+    Math.max(
+      30,
+      ...objects()
+        .filter((b) => b.ID !== state.held)
+        .map((b) => b.y + b.dy + 7),
+    );
+  const emit = (
+    phase: MotionPhase,
+    b: Block,
+    grip: number,
+    duration: number,
+  ) => {
+    state.motion = { phase, objectId: b.ID, grip, duration };
     frames.push(copy(state));
   };
   const spot = (b: Block, dest: Block): [number, number, number] | null => {
@@ -317,9 +333,16 @@ export function createGroundedEngine(legacy: Engine): Engine {
       reason: reasons,
       root: lastRoot,
     });
+    const safe = clearance();
+    armAt(b, Math.max(safe + b.dy + 2, b.y + b.dy + 10));
+    emit("approach", b, 0, 850);
+    armAt(b, b.y + b.dy + 2);
+    emit("descend", b, 0, 620);
+    emit("grasp", b, 1, 360);
     state.held = b.ID;
-    b.y = 36;
-    emit();
+    b.y = safe;
+    armAt(b, b.y + b.dy + 2);
+    emit("lift", b, 1, 720);
   };
   const put = (b: Block, dest: Block, reasons: string[], depth = 0) => {
     if (b.ID === dest.ID || above(dest, b))
@@ -361,13 +384,17 @@ export function createGroundedEngine(legacy: Engine): Engine {
       );
     b.x = location[0];
     b.z = location[2];
-    b.y = 36;
-    emit();
+    b.y = Math.max(b.y, location[1] + 7);
+    armAt(b, b.y + b.dy + 2);
+    emit("transfer", b, 1, 1050);
     const before = copy(state);
     b.y = location[1];
-    emit();
+    armAt(b, b.y + b.dy + 2);
+    emit("lower", b, 1, 720);
     state.held = null;
-    emit();
+    emit("release", b, 0, 350);
+    armAt(b, Math.max(clearance() + b.dy + 2, b.y + b.dy + 10));
+    emit("retreat", b, 0, 620);
     events.push({
       kind: "put",
       id: b.ID,
@@ -835,6 +862,7 @@ export function createGroundedEngine(legacy: Engine): Engine {
         return false;
       }
       state.time = rendered.time + 1;
+      delete state.motion;
       legacy.replaceWorld(state);
       state.facts = legacy.snapshot().facts;
       rendered = copy(state);
